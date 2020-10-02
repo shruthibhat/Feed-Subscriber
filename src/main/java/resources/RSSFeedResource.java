@@ -14,7 +14,7 @@ public class RSSFeedResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String getFeeds() throws Exception{
-        if(auth == null){
+        if(auth == null || auth.equalsIgnoreCase("")){
             throw new BadRequestException("Please provide the auth key!!");
         }
         Client client = ClientBuilder.newClient();
