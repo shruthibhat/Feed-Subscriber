@@ -10,25 +10,28 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/feeds")
 public class RSSFeedResource {
     String auth = System.getenv("AUTH");
 
-    @POST
+    @GET
     @Path("/createFeed")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String createFeed(@NotNull @Valid CreateFeedRequest request) throws Exception {
+    public Response createFeed(@QueryParam("url") String url) throws Exception {
         if(auth == null || auth.equalsIgnoreCase("")){
             throw new BadRequestException("Please provide the auth key!!");
         }
-        String url = request.getSrcUrl();
+        if(url == null || url.equalsIgnoreCase("")){
+            throw new BadRequestException("Please provide a valid source url!!");
+        }
         Client client = ClientBuilder.newClient();
         String path = String.format("http://fetchrss.com/api/v1/feed/create?auth=%s&url=%s", auth, url);
         WebTarget target = client.
                 target(path);
-        String response = target.request().get(String.class);
+        Response response = target.request().get();
         return response;
     }
 
@@ -36,7 +39,7 @@ public class RSSFeedResource {
     @Path("/getFeedList")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getFeeds() throws Exception{
+    public Response getFeeds() throws Exception{
         if(auth == null || auth.equalsIgnoreCase("")){
             throw new BadRequestException("Please provide the auth key!!");
         }
@@ -44,7 +47,7 @@ public class RSSFeedResource {
         String path = String.format("http://fetchrss.com/api/v1/feed/list?auth=%s", auth);
         WebTarget target = client.
                 target(path);
-        String response = target.request().get(String.class);
+        Response response = target.request().get();
         return response;
     }
 
@@ -52,7 +55,7 @@ public class RSSFeedResource {
     @Path("/deleteFeed")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String deleteFeed(@QueryParam("id") String id) throws Exception {
+    public Response deleteFeed(@QueryParam("id") String id) throws Exception {
         if(auth == null || auth.equalsIgnoreCase("")){
             throw new BadRequestException("Please provide the auth key!!");
         }
@@ -65,7 +68,7 @@ public class RSSFeedResource {
         String path = String.format("http://fetchrss.com/api/v1/feed/delete?auth=%s&id=%s", auth, id);
         WebTarget target = client.
                 target(path);
-        String response = target.request().get(String.class);
+        Response response = target.request().get();
         return response;
     }
 }

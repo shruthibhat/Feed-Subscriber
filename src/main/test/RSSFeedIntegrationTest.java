@@ -29,9 +29,9 @@ public class RSSFeedIntegrationTest {
         CreateFeedRequest request = new CreateFeedRequest();
         request.setSrcUrl(feedUrl);
         Response response = client.target(
-                String.format("http://localhost:%d/feed-subscriber/feeds/createFeed", EXT.getLocalPort()))
+                String.format("http://localhost:%d/feed-subscriber/feeds/createFeed?url=%s", EXT.getLocalPort(),feedUrl))
                 .request()
-                .post(Entity.json(request));
+                .get();
         String res = response.readEntity(String.class);
         JsonObject responseObject = JsonParser.parseString(res).getAsJsonObject();
         Boolean result = responseObject.get("success").getAsBoolean();
@@ -42,7 +42,7 @@ public class RSSFeedIntegrationTest {
 
     }
 
-    @Test
+   @Test
     void testGetFeedList() {
         Client client = EXT.client();
 
@@ -58,11 +58,9 @@ public class RSSFeedIntegrationTest {
 
     }
 
-    @Test
+   @Test
     void testDeleteFeedById() {
-
         Client client = EXT.client();
-
         Response response = client.target(
                 String.format("http://localhost:%d/feed-subscriber/feeds/deleteFeed?id=%s", EXT.getLocalPort(), id))
                 .request()
